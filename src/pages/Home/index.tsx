@@ -13,15 +13,30 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useState } from 'react'
 
+//  Criando o schema do formulário com Zod
 const newCycleFormValidationSchema = z.object({
   task: z.string().min(5),
   minutesAmount: z.number().min(5).max(60),
 })
 
+//  Extraindo a tipagem do formulário com o zod infer
 type NewCycleFormData = z.infer<typeof newCycleFormValidationSchema>
 
+//  Criando a tipagem do ciclo
+interface Cycle extends NewCycleFormData {
+  id: string
+}
+
 export function Home() {
+  // Estado que armazena todos os ciclos
+  const [cycles, setCycles] = useState<Cycle[]>([])
+
+  // Estado que armazena o id do ciclo ativo
+  const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
+
+  // Instanciando o useForm
   const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
     resolver: zodResolver(newCycleFormValidationSchema),
     defaultValues: {
@@ -30,12 +45,35 @@ export function Home() {
     },
   })
 
-  function handleCreateNewCycle(e: NewCycleFormData) {
-    console.log(e)
+  // Função chamada no onSubmit do Form
+  function handleCreateNewCycle({ task, minutesAmount }: NewCycleFormData) {
+    // Criando um id para o novo ciclo
+    const id = String(Date.now())
+
+    // Criando o novo ciclo
+    const newCycle: Cycle = {
+      id,
+      task,
+      minutesAmount,
+    }
+
+    // Registrando o novo ciclo
+    setCycles((prev) => [...prev, newCycle])
+
+    // Registrando o id do ciclo ativo
+    setActiveCycleId(id)
+
+    // Resetando o formulário para os valores padrões
     reset()
   }
 
-  const isSubmitDisabled = !watch('task')
+  // Buscando o ciclo ativo dentro de todos os ciclos através do id do ciclo ativo
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+
+  // Monitorando o input task
+  const task = watch('task')
+  // Controlando o botão começar baseado no input task
+  const isSubmitDisabled = !task
 
   return (
     <HomeContainer>

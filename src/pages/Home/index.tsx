@@ -11,13 +11,17 @@ import {
 import { useForm } from 'react-hook-form'
 
 export function Home() {
-  const { register, handleSubmit, watch } = useForm()
+  const {
+    register,
+    handleSubmit,
+    // watch
+  } = useForm()
 
   function handleCreateNewCycle(e: any) {
     console.log(e)
   }
 
-  const isSubmitDisabled = !watch('task')
+  // const isSubmitDisabled = !watch('task')
 
   return (
     <HomeContainer>
@@ -30,7 +34,7 @@ export function Home() {
             list="task-sugestions"
             placeholder="Dê um nome para o seu projeto"
             {...register('task')}
-            required
+            // required
           />
 
           <datalist id="task-sugestions">
@@ -46,9 +50,9 @@ export function Home() {
             id="minutesAmount"
             placeholder="00"
             // step={5}
-            min={1}
-            max={60}
-            required
+            // min={1}
+            // max={60}
+            // required
             {...register('minutesAmount', { valueAsNumber: true })}
           />
 
@@ -63,7 +67,10 @@ export function Home() {
           <span>0</span>
         </CountdownContainer>
 
-        <StartButton type="submit" disabled={isSubmitDisabled}>
+        <StartButton
+          type="submit"
+          // disabled={isSubmitDisabled}
+        >
           <Play size={24} />
           Começar
         </StartButton>

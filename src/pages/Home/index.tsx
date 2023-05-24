@@ -1,4 +1,5 @@
 import { Play } from 'phosphor-react'
+
 import {
   CountdownContainer,
   HomeContainer,
@@ -8,20 +9,33 @@ import {
   TaskInput,
   UserInputContainer,
 } from './styles'
+
 import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
+const newCycleFormValidationSchema = z.object({
+  task: z.string().min(5),
+  minutesAmount: z.number().min(5).max(60),
+})
+
+type NewCycleFormData = z.infer<typeof newCycleFormValidationSchema>
 
 export function Home() {
-  const {
-    register,
-    handleSubmit,
-    // watch
-  } = useForm()
+  const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
+    resolver: zodResolver(newCycleFormValidationSchema),
+    defaultValues: {
+      task: '',
+      minutesAmount: 0,
+    },
+  })
 
-  function handleCreateNewCycle(e: any) {
+  function handleCreateNewCycle(e: NewCycleFormData) {
     console.log(e)
+    reset()
   }
 
-  // const isSubmitDisabled = !watch('task')
+  const isSubmitDisabled = !watch('task')
 
   return (
     <HomeContainer>
@@ -34,7 +48,7 @@ export function Home() {
             list="task-sugestions"
             placeholder="Dê um nome para o seu projeto"
             {...register('task')}
-            // required
+            required
           />
 
           <datalist id="task-sugestions">
@@ -49,10 +63,10 @@ export function Home() {
             type="number"
             id="minutesAmount"
             placeholder="00"
-            // step={5}
-            // min={1}
-            // max={60}
-            // required
+            step={5}
+            min={5}
+            max={60}
+            required
             {...register('minutesAmount', { valueAsNumber: true })}
           />
 
@@ -67,10 +81,7 @@ export function Home() {
           <span>0</span>
         </CountdownContainer>
 
-        <StartButton
-          type="submit"
-          // disabled={isSubmitDisabled}
-        >
+        <StartButton type="submit" disabled={isSubmitDisabled}>
           <Play size={24} />
           Começar
         </StartButton>

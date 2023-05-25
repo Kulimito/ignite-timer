@@ -2,6 +2,7 @@ import React, {
   ReactNode,
   createContext,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react'
@@ -33,10 +34,40 @@ interface ContextType {
 export const CountdownContext = createContext<ContextType>({} as ContextType)
 
 export function CyclesContextProvider({ children }: { children: ReactNode }) {
-  const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
-  const [cycles, setCycles] = useState<Cycle[]>([])
-  const [timeRemaining, setTimeRemaining] = useState<number>(0)
   const intervalId = useRef<number | null>(null)
+  const [activeCycleId, setActiveCycleId] = useState<string | null>(() => {
+    const activeCycleIdJSON = localStorage.getItem(
+      '@ignite-timer:active-cycle-id-1.0.0',
+    )
+
+    if (activeCycleIdJSON) {
+      return JSON.parse(activeCycleIdJSON)
+    } else {
+      return null
+    }
+  })
+  const [timeRemaining, setTimeRemaining] = useState<number>(() => {
+    const timeRemainingJSON = localStorage.getItem(
+      '@ignite-timer:time-remaining-1.0.0',
+    )
+
+    if (timeRemainingJSON) {
+      return JSON.parse(timeRemainingJSON)
+    } else {
+      return 0
+    }
+  })
+  const [cycles, setCycles] = useState<Cycle[]>(() => {
+    const storedCyclesStateJSON = localStorage.getItem(
+      '@ignite-timer:cycles-state-1.0.0',
+    )
+
+    if (storedCyclesStateJSON) {
+      return JSON.parse(storedCyclesStateJSON)
+    } else {
+      return []
+    }
+  })
 
   const handleCycleEnds = useCallback(
     (value: 'finishedDate' | 'interruptedDate') => {
@@ -72,6 +103,22 @@ export function CyclesContextProvider({ children }: { children: ReactNode }) {
 
     setActiveCycleId(id)
   }
+
+  useEffect(() => {
+    const cyclesStateJSON = JSON.stringify(cycles)
+    const timeRemainingJSON = JSON.stringify(timeRemaining)
+    const activeCycleIdJSON = JSON.stringify(activeCycleId)
+
+    localStorage.setItem('@ignite-timer:cycles-state-1.0.0', cyclesStateJSON)
+    localStorage.setItem(
+      '@ignite-timer:time-remaining-1.0.0',
+      timeRemainingJSON,
+    )
+    localStorage.setItem(
+      '@ignite-timer:active-cycle-id-1.0.0',
+      activeCycleIdJSON,
+    )
+  }, [cycles, timeRemaining, activeCycleId])
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 

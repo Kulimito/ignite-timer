@@ -37,9 +37,13 @@ export function Countdown() {
 
   useEffect(() => {
     if (activeCycle) {
-      startCountdown(activeCycle.minutesAmount * 60 + 1)
+      if (timeRemaining === 0) {
+        startCountdown(activeCycle.minutesAmount * 60 + 1)
+      } else {
+        startCountdown(timeRemaining)
+      }
     }
-  }, [activeCycle, startCountdown])
+  }, [activeCycle, startCountdown, timeRemaining])
 
   useEffect(() => {
     activeCycle && (document.title = `${minutes}:${seconds}`)

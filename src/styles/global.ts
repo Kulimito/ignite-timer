@@ -7,6 +7,12 @@ export const GlobalStyle = createGlobalStyle`
         box-sizing: border-box;
     }
 
+    html {
+        @media (max-width: 780px) {
+            font-size: 12px;
+        }
+    }
+    
     :focus {
         outline: 0;
         box-shadow: 0 0 0 2px ${(props) => props.theme['green-500']};

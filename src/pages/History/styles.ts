@@ -4,8 +4,6 @@ export const HistoryContainer = styled.main`
   flex: 1;
   padding: 3.5rem;
 
-  /* overflow: auto; */
-
   display: flex;
   flex-direction: column;
 
@@ -13,12 +11,24 @@ export const HistoryContainer = styled.main`
     font-size: 1.5rem;
     color: ${(props) => props.theme['gray-100']};
   }
+
+  @media (max-width: 780px) {
+    padding: 1rem 0;
+  }
 `
 
 export const HistoryList = styled.div`
+  border-radius: 8px;
+
+  max-height: 50vh;
+
   flex: 1;
   overflow: auto;
   margin-top: 2rem;
+
+  @media (max-width: 780px) {
+    max-height: 75vh;
+  }
 `
 
 export const HistoryTable = styled.table`
@@ -26,12 +36,9 @@ export const HistoryTable = styled.table`
   border-collapse: collapse;
 
   thead {
-    /* Encontrar um modo de fixar o thead  */
-
-    /* border: 1px solid blue;
-
-    position: fixed;
-    left: 300px; */
+    position: sticky;
+    top: 0;
+    z-index: 1;
   }
 
   th {

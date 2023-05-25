@@ -1,4 +1,4 @@
-import React, {
+import {
   ReactNode,
   createContext,
   useCallback,
@@ -24,11 +24,10 @@ interface CreateNewCycleData {
 interface ContextType {
   cycles: Cycle[]
   activeCycle: Cycle | undefined
-  intervalId: React.MutableRefObject<number | null>
-  timeRemaining: number
-  handleCycleEnds: (value: 'finishedDate' | 'interruptedDate') => void
-  setTimeRemaining: React.Dispatch<React.SetStateAction<number>>
+  minutes: string
+  seconds: string
   createNewCycle: ({ task, minutesAmount }: CreateNewCycleData) => void
+  handleCycleEnds: (value: 'finishedDate' | 'interruptedDate') => void
 }
 
 export const CountdownContext = createContext<ContextType>({} as ContextType)
@@ -120,16 +119,57 @@ export function CyclesContextProvider({ children }: { children: ReactNode }) {
     )
   }, [cycles, timeRemaining, activeCycleId])
 
+  const startCountdown = useCallback(
+    (value = 0) => {
+      const startTime = Date.now()
+
+      if (intervalId.current) {
+        clearInterval(intervalId.current)
+      }
+
+      intervalId.current = setInterval(() => {
+        const diff = Math.floor((Date.now() - startTime) / 1000)
+
+        if (diff >= value) {
+          handleCycleEnds('finishedDate')
+        } else {
+          setTimeRemaining(value - diff)
+        }
+      }, 1000)
+    },
+    [intervalId, handleCycleEnds, setTimeRemaining],
+  )
+
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+
+  const minutes = String(Math.floor(timeRemaining / 60)).padStart(2, '0')
+  const seconds = String(timeRemaining % 60).padStart(2, '0')
+
+  useEffect(() => {
+    if (activeCycle) {
+      if (timeRemaining === 0) {
+        startCountdown(activeCycle.minutesAmount * 60 + 1)
+      } else {
+        startCountdown(timeRemaining)
+      }
+    }
+  }, [activeCycle, startCountdown, timeRemaining])
+
+  useEffect(() => {
+    activeCycle && (document.title = `${minutes}:${seconds}`)
+
+    if (!activeCycle && document.title !== 'Ignite Timer') {
+      document.title = 'Ignite Timer'
+    }
+  }, [activeCycle, minutes, seconds])
 
   const contextValue = {
     cycles,
     activeCycle,
-    intervalId,
-    timeRemaining,
     handleCycleEnds,
-    setTimeRemaining,
     createNewCycle,
+    minutes,
+    seconds,
   }
 
   return (

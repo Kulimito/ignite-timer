@@ -15,6 +15,10 @@ export const HistoryContainer = styled.main`
   @media (max-width: 780px) {
     padding: 1rem 0;
   }
+
+  @media (max-height: 600px) {
+    max-height: 580px;
+  }
 `
 
 export const HistoryList = styled.div`

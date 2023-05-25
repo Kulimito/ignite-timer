@@ -9,7 +9,12 @@ export const UserInputContainer = styled.div`
   color: ${(props) => props.theme['gray-100']};
   font-size: 1.125rem;
   font-weight: bold;
-  flex-wrap: wrap;
+
+  @media (max-width: 500px) {
+    gap: 1rem;
+    flex-direction: column;
+    font-size: 2rem;
+  }
 `
 
 const BaseInput = styled.input`
@@ -21,6 +26,7 @@ const BaseInput = styled.input`
   font-size: 1.125rem;
   padding: 0 0.5rem;
   color: ${(props) => props.theme['gray-100']};
+  text-align: center;
 
   &:focus {
     box-shadow: none;
@@ -29,6 +35,10 @@ const BaseInput = styled.input`
 
   &::placeholder {
     color: ${(props) => props.theme['gray-500']};
+  }
+
+  @media (max-width: 500px) {
+    font-size: 2rem;
   }
 `
 

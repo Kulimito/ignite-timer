@@ -1,23 +1,59 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { MinutesAmountInput, TaskInput, UserInputContainer } from './styles'
 import { CountdownContext } from '../..'
-import { useFormContext } from 'react-hook-form'
+import { useFormContext, Controller } from 'react-hook-form'
 
 export function NewCycleForm() {
   const { activeCycle } = useContext(CountdownContext)
-  const { register } = useFormContext()
+  const { register, control } = useFormContext()
+  const taskInputRef = useRef<HTMLInputElement>(null)
+  const [placeHolder, setPlaceHolder] = useState(
+    'Dê um nome para o seu projeto',
+  )
+  const [taskInputValue, setTaskInputValue] = useState('')
+
+  useEffect(() => {
+    if (window.matchMedia('(max-width: 500px)').matches) {
+      setPlaceHolder('Digite a tarefa!')
+    }
+  }, [])
+
+  useEffect(() => {
+    if (taskInputRef.current) {
+      if (window.matchMedia('(max-width: 500px)').matches) {
+        taskInputRef.current.style.width = `${
+          (taskInputValue.length || placeHolder.length) + 1
+        }ch`
+      } else {
+        taskInputRef.current.style.width = ''
+      }
+    }
+  }, [taskInputValue, placeHolder])
 
   return (
     <UserInputContainer>
       <label htmlFor="task">Vou trabalhar em</label>
-      <TaskInput
-        type="text"
-        id="task"
-        list="task-sugestions"
-        placeholder="Dê um nome para o seu projeto"
-        {...register('task')}
-        disabled={!!activeCycle}
-        required
+
+      <Controller
+        name="task"
+        control={control}
+        defaultValue=""
+        render={({ field }) => (
+          <TaskInput
+            {...field}
+            ref={taskInputRef}
+            type="text"
+            id="task"
+            list="task-sugestions"
+            placeholder={placeHolder}
+            onChange={(e) => {
+              field.onChange(e.target.value)
+              setTaskInputValue(e.target.value)
+            }}
+            disabled={!!activeCycle}
+            required
+          />
+        )}
       />
 
       <datalist id="task-sugestions">

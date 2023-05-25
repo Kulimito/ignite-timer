@@ -36,6 +36,10 @@ export const BaseCountdownButton = styled.button`
     opacity: 0.7;
     cursor: not-allowed;
   }
+
+  @media (max-width: 500px) {
+    max-width: 90%;
+  }
 `
 
 export const StartButton = styled(BaseCountdownButton)`
